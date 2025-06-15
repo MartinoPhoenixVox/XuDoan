@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Chỉnh Sửa Phụ Huynh{% endblock %}
+{% block content %}
+<div class="container p-6">
+    <h1 class="text-2xl font-bold mb-6">Chỉnh Sửa Phụ Huynh</h1>
+    <form method="POST" class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Họ Tên</label>
+            <input type="text" name="hoTen" value="{{ phu_huynh.hoTen }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Số Điện Thoại</label>
+            <input type="text" name="soDienThoai" value="{{ phu_huynh.soDienThoai }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Tên Thánh</label>
+            <input type="text" name="tenThanh" value="{{ phu_huynh.tenThanh }}" class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">Lưu</button>
+    </form>
+</div>
+{% endblock %}

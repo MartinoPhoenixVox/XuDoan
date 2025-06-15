@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}XuĐoàn WebApp{% endblock %}</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+
+        body {
+            @apply bg-gray-50 font-nunito min-h-screen flex flex-col;
+        }
+
+        .alert {
+            @apply p-4 rounded-lg border mb-4 transition-all duration-300;
+        }
+
+        .alert-success {
+            @apply bg-green-50 border-green-200 text-green-700;
+        }
+
+        .alert-info {
+            @apply bg-blue-50 border-blue-200 text-blue-700;
+        }
+
+        .alert-warning {
+            @apply bg-yellow-50 border-yellow-200 text-yellow-700;
+        }
+
+        .alert-danger {
+            @apply bg-red-50 border-red-200 text-red-700;
+        }
+
+        .container {
+            @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1;
+        }
+
+        footer {
+            @apply bg-white border-t mt-8 py-6;
+        }
+
+        .footer-content {
+            @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center;
+        }
+
+        .footer-links {
+            @apply flex space-x-6 mt-4 md:mt-0;
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body class="antialiased">
+    <header class="shadow-sm">
+        {% include 'includes/navbar.html' %}
+    </header>
+
+    <main class="container py-8">
+        <div class="max-w-5xl mx-auto">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="space-y-3 mb-6">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} flex items-center">
+                                {% if category == 'success' %}
+                                    <i class="fas fa-check-circle mr-3"></i>
+                                {% elif category == 'danger' %}
+                                    <i class="fas fa-exclamation-circle mr-3"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle mr-3"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle mr-3"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="text-center md:text-left">
+                <span class="text-gray-600">&copy; {{ current_year or 2025 }} Xứ Đoàn. All rights reserved.</span>
+            </div>
+
+            <nav class="footer-links">
+
+            </nav>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

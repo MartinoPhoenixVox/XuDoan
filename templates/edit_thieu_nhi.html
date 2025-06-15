@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Chỉnh Sửa Thiếu Nhi{% endblock %}
+{% block content %}
+<div class="container p-6">
+    <h1 class="text-2xl font-bold mb-6">Chỉnh Sửa Thiếu Nhi</h1>
+    <form method="POST" class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Họ Tên</label>
+            <input type="text" name="hoTen" value="{{ thieu_nhi.hoTen }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Ngày Sinh</label>
+            <input type="date" name="ngaySinh" value="{{ thieu_nhi.ngaySinh.strftime('%Y-%m-%d') }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Giáo Xứ</label>
+            <input type="text" name="giaoXu" value="{{ thieu_nhi.giaoXu }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Địa Chỉ</label>
+            <input type="text" name="diaChi" value="{{ thieu_nhi.diaChi }}" required class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Tên Thánh</label>
+            <input type="text" name="tenThanh" value="{{ thieu_nhi.tenThanh }}" class="mt-1 p-2 w-full border rounded-md">
+        </div>
+        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">Lưu</button>
+    </form>
+</div>
+{% endblock %}

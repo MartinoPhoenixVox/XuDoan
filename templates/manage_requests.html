@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Quản lý Yêu cầu{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="text-2xl font-bold mb-6">Yêu cầu Chỉnh sửa Đang chờ</h1>
+    <table class="min-w-full">
+        <thead>
+            <tr>
+                <th>Người dùng</th>
+                <th>Trường</th>
+                <th>Giá trị mới</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.user_id }} ({{ req.user_type }})</td>
+                <td>{{ req.field }}</td>
+                <td>{{ req.new_value }}</td>
+                <td>
+                    <a href="{{ url_for('main.approve_request', request_id=req.id) }}" class="text-green-500">Duyệt</a>
+                    <a href="{{ url_for('main.reject_request', request_id=req.id) }}" class="text-red-500">Từ chối</a>
+                </td>
+                <td>
+                    {% if req.user_type == 'thieunhi' %}
+                        {{ ThieuNhi.query.get(req.user_id).hoTen }}
+                    {% elif req.user_type == 'phuhuynh' %}
+                        {{ PhuHuynh.query.get(req.user_id).hoTen }}
+                        (Quản lý: {{ ThieuNhi.query.get(req.idThieuNhi).hoTen }})
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

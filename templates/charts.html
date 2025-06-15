@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% block title %}Thống Kê Phân Đoàn{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .dashboard {
+        padding: 20px;
+        background-color: #f5f7fa;
+        min-height: 100vh;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+        transition: transform 0.3s ease;
+    }
+
+    .chart-container:hover {
+        transform: translateY(-5px);
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .chart-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 15px;
+    }
+
+    select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #dcdde1;
+        background-color: #f8f9fa;
+        font-size: 14px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    canvas {
+        width: 100%!important;
+        height: 400px!important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="chart-header">
+        <h1 class="chart-title">Phân Tích Dữ Liệu Phân Đoàn</h1>
+        <div class="filter-group">
+            <select id="yearSelect" class="form-select">
+                <option value="2024-2025">Năm 2024-2025</option>
+                <option value="2023-2024">Năm 2023-2024</option>
+                <option value="2022-2023">Năm 2022-2023</option>
+            </select>
+            <select id="semesterSelect" class="form-select">
+                <option value="all">Tất cả học kỳ</option>
+                <option value="1">Học kỳ 1</option>
+                <option value="2">Học kỳ 2</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <!-- Biểu đồ 1 -->
+        <div class="chart-container">
+            <h3>Tương Quan Điểm Số Phân Đoàn</h3>
+            <canvas id="scoreComparisonChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ 2 -->
+        <div class="chart-container">
+            <h3>Phân Bổ Thiếu Nhi Theo Phân Đoàn</h3>
+            <canvas id="membersDistributionChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ 3 -->
+        <div class="chart-container">
+            <h3>Tiến Trình Điểm Số</h3>
+            <canvas id="progressChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ 4 -->
+        <div class="chart-container">
+            <h3>Tỷ Lệ Điểm Danh</h3>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+<script>
+    // Màu sắc theme
+    const chartColors = {
+        primary: '#4e73df',
+        success: '#1cc88a',
+        warning: '#f6c23e',
+        danger: '#e74a3b',
+        info: '#36b9cc',
+        secondary: '#858796'
+    };
+
+    // Khởi tạo biểu đồ
+    let comparisonChart, distributionChart, progressChart, attendanceChart;
+
+    // Hàm khởi tạo tất cả biểu đồ
+    async function initializeCharts() {
+        const data = await fetchChartData();
+
+        createComparisonChart(data.comparison);
+        createDistributionChart(data.distribution);
+        createProgressChart(data.progress);
+        createAttendanceChart(data.attendance);
+    }
+
+    // Hàm lấy dữ liệu từ API
+    async function fetchChartData() {
+        const params = new URLSearchParams({
+            year: document.getElementById('yearSelect').value,
+            semester: document.getElementById('semesterSelect').value
+        });
+
+        try {
+            const response = await fetch(`/api/charts-data?${params}`);
+            return await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+            return null;
+        }
+    }
+
+    // Biểu đồ 1: So sánh điểm số
+    function createComparisonChart(data) {
+        const ctx = document.getElementById('scoreComparisonChart').getContext('2d');
+
+        if (comparisonChart) comparisonChart.destroy();
+
+        comparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Điểm TB',
+                    data: data.values,
+                    backgroundColor: chartColors.primary,
+                    borderColor: chartColors.primary,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: 'Điểm trung bình'
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Biểu đồ 2: Phân bổ thiếu nhi
+    function createDistributionChart(data) {
+        const ctx = document.getElementById('membersDistributionChart').getContext('2d');
+
+        if (distributionChart) distributionChart.destroy();
+
+        distributionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.counts,
+                    backgroundColor: data.colors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.label}: ${ctx.raw} em`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Biểu đồ 3: Tiến trình điểm số
+    function createProgressChart(data) {
+        const ctx = document.getElementById('progressChart').getContext('2d');
+
+        if (progressChart) progressChart.destroy();
+
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: data.datasets.map(ds => ({
+                    ...ds,
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    tension: 0.4
+                }))
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: { text: 'Điểm trung bình' }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Biểu đồ 4: Tỷ lệ điểm danh
+    function createAttendanceChart(data) {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+        if (attendanceChart) attendanceChart.destroy();
+
+        attendanceChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Có mặt', 'Vắng'],
+                datasets: [{
+                    data: [data.present, data.absent],
+                    backgroundColor: [chartColors.success, chartColors.danger],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.label}: ${ctx.raw}%`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Xử lý sự kiện filter
+    document.querySelectorAll('.form-select').forEach(select => {
+        select.addEventListener('change', async () => {
+            const data = await fetchChartData();
+
+            updateCharts(data);
+        });
+    });
+
+    // Hàm cập nhật dữ liệu
+    function updateCharts(data) {
+        comparisonChart.data.labels = data.comparison.labels;
+        comparisonChart.data.datasets[0].data = data.comparison.values;
+        comparisonChart.update();
+
+        distributionChart.data.labels = data.distribution.labels;
+        distributionChart.data.datasets[0].data = data.distribution.counts;
+        distributionChart.update();
+
+        progressChart.data.labels = data.progress.labels;
+        progressChart.data.datasets = data.progress.datasets;
+        progressChart.update();
+
+        attendanceChart.data.datasets[0].data = [data.attendance.present, data.attendance.absent];
+        attendanceChart.update();
+    }
+
+    // Khởi động ban đầu
+    initializeCharts();
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Thiếu Nhi{% endblock %}
+{% block content %}
+<div class="container p-6">
+  <h1 class="text-2xl font-bold mb-4">Chào {{ user.hoTen }}</h1>
+  <div class="bg-white p-6 rounded-xl shadow-sm">
+    <h2 class="text-xl font-semibold mb-4">Thông Tin Cá Nhân</h2>
+    <p><span class="font-medium">Ngày sinh:</span> {{ user.ngaySinh.strftime('%d/%m/%Y') }}</p>
+    <p><span class="font-medium">Giáo xứ:</span> {{ user.giaoXu }}</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-4">Lịch Sử Điểm Danh</h2>
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left">Ngày</th>
+          <th class="px-6 py-3 text-left">Phân Đoàn</th>
+          <th class="px-6 py-3 text-left">Trạng Thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dd in user.diemdanhs %}
+        <tr>
+          <td class="px-6 py-4">{{ dd.ngayDiemDanh.strftime('%d/%m/%Y') }}</td>
+          <td>{{ dd.phan_doan.tenPhanDoan }}</td>
+          <td>{{ 'Có mặt' if dd.coMatThanhLe else 'Vắng' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

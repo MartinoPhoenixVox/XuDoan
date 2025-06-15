@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .dashboard {
+        @apply p-6;
+    }
+
+    .stats-grid {
+        @apply grid grid-cols-1 md:grid-cols-3 gap-6 mb-8;
+    }
+
+    .stat-card {
+        @apply bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow;
+    }
+
+    .stat-title {
+        @apply text-gray-500 text-sm font-medium;
+    }
+
+    .stat-value {
+        @apply text-3xl font-bold text-gray-800 mt-2;
+    }
+
+    .quick-actions {
+        @apply grid grid-cols-1 md:grid-cols-3 gap-4 mb-8;
+    }
+
+    .action-card {
+        @apply p-6 rounded-xl text-white flex items-center justify-center transition-transform hover:scale-105;
+    }
+
+    .action-card.import {
+        @apply bg-indigo-500;
+    }
+
+    .action-card.qr {
+        @apply bg-green-500;
+    }
+
+    .action-card.chart {
+        @apply bg-purple-500;
+    }
+
+    .crud-section {
+        @apply bg-white rounded-xl shadow-sm overflow-hidden;
+    }
+
+    .table-header {
+        @apply px-6 py-4 border-b flex items-center justify-between;
+    }
+
+    .search-input {
+        @apply px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500;
+    }
+
+    .data-table {
+        @apply min-w-full divide-y divide-gray-200;
+    }
+
+    .data-table thead {
+        @apply bg-gray-50;
+    }
+
+    .data-table th {
+        @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+    }
+
+    .data-table td {
+        @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+    }
+
+    .action-buttons button {
+        @apply px-3 py-1 rounded-md text-sm mr-2;
+    }
+
+    .edit-btn {
+        @apply bg-blue-100 text-blue-800 hover:bg-blue-200;
+    }
+
+    .delete-btn {
+        @apply bg-red-100 text-red-800 hover:bg-red-200;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Thêm phần hiển thị user thực tế -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Quản trị hệ thống - {{ user.hoTen }}</h1>
+
+    <!-- Thống kê nhanh -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Tổng Thiếu Nhi</div>
+            <div class="stat-value">{{ stats.total_thieu_nhi }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Tổng Phụ Huynh</div>
+            <div class="stat-value">{{ stats.total_phu_huynh }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Phân Đoàn</div>
+            <div class="stat-value">{{ stats.total_phan_doan }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{{ url_for('main.import_data') }}" class="action-card import">
+            <div class="text-center">
+                <i class="fas fa-file-import text-4xl mb-2"></i>
+                <div class="text-lg font-semibold">Import Dữ Liệu</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('main.scan_qr') }}" class="action-card qr">
+            <div class="text-center">
+                <i class="fas fa-qrcode text-4xl mb-2"></i>
+                <div class="text-lg font-semibold">Điểm Danh QR</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('main.charts') }}" class="action-card chart">
+            <div class="text-center">
+                <i class="fas fa-chart-bar text-4xl mb-2"></i>
+                <div class="text-lg font-semibold">Thống Kê</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Bảng CRUD Thiếu Nhi -->
+    <div class="crud-section mb-8">
+        <div class="table-header">
+            <h2 class="text-xl font-semibold text-gray-800">Quản lý Thiếu Nhi</h2>
+            <input type="text" placeholder="Tìm kiếm..." class="search-input w-64">
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Họ Tên</th>
+                    <th>Ngày Sinh</th>
+                    <th>Giáo Xứ</th>
+                    <th>Địa Chỉ</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for thieu_nhi in thieu_nhi_list %}
+                <tr>
+                    <td class="px-6 py-4">{{ thieu_nhi.hoTen }}</td>
+                    <td>{{ thieu_nhi.ngaySinh.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ thieu_nhi.giaoXu }}</td>
+                    <td>{{ thieu_nhi.diaChi }}</td>
+                    <td class="action-buttons">
+                        <a href="{{ url_for('main.edit_thieu_nhi', id=thieu_nhi.idThieuNhi) }}" class="edit-btn">
+                            <i class="fas fa-edit mr-1"></i>Sửa
+                        </a>
+                        <button class="delete-btn" onclick="deleteThieuNhi('{{ thieu_nhi.idThieuNhi }}')">
+                            <i class="fas fa-trash mr-1"></i>Xóa
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bảng CRUD Phụ Huynh -->
+    <div class="crud-section">
+        <div class="table-header">
+            <h2 class="text-xl font-semibold text-gray-800">Quản lý Phụ Huynh</h2>
+            <input type="text" placeholder="Tìm kiếm..." class="search-input w-64">
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Họ Tên</th>
+                    <th>SĐT</th>
+                    <th>Thiếu Nhi Quản lý</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for phu_huynh in phu_huynh_list %}
+                <tr>
+                    <td class="px-6 py-4">{{ phu_huynh.hoTen }}</td>
+                    <td>{{ phu_huynh.soDienThoai }}</td>
+                    <td>{{ phu_huynh.thieu_nhi_quan_ly | join(', ') or 'Không có' }}</td>
+                    <td class="action-buttons">
+                        <a href="{{ url_for('main.edit_phu_huynh', id=phu_huynh.idPhuHuynh) }}" class="edit-btn">
+                            <i class="fas fa-edit mr-1"></i>Sửa
+                        </a>
+                        <button class="delete-btn" onclick="deletePhuHuynh('{{ phu_huynh.idPhuHuynh }}')">
+                            <i class="fas fa-trash mr-1"></i>Xóa
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Khởi tạo DataTable
+    $(document).ready(function() {
+        $('.data-table').DataTable({
+            "paging": true,
+            "lengthMenu": [5, 10, 25, 50],
+            "language": {
+                "search": "Tìm kiếm:",
+                "lengthMenu": "Hiển thị _MENU_ mục",
+                "paginate": {
+                    "previous": "Trước",
+                    "next": "Sau"
+                }
+            }
+        });
+    });
+
+    // Hàm xóa Thiếu Nhi
+    function deleteThieuNhi(id) {
+        if (confirm('Bạn có chắc muốn xóa Thiếu Nhi này?')) {
+            fetch('{{ url_for("main.delete_thieu_nhi", id="ID_PLACEHOLDER") }}/'.replace('ID_PLACEHOLDER', id), {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Xóa thành công!');
+                    location.reload();
+                } else {
+                    alert('Xóa thất bại: ' + data.message);
+                }
+            })
+            .catch(error => alert('Lỗi: ' + error));
+        }
+    }
+
+    // Hàm xóa Phụ Huynh
+    function deletePhuHuynh(id) {
+        if (confirm('Bạn có chắc muốn xóa Phụ Huynh này?')) {
+            fetch('{{ url_for("main.delete_thieu_nhi", id="ID_PLACEHOLDER") }}/'.replace('ID_PLACEHOLDER', id), {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Xóa thành công!');
+                    location.reload();
+                } else {
+                    alert('Xóa thất bại: ' + data.message);
+                }
+            })
+            .catch(error => alert('Lỗi: ' + error));
+        }
+    }
+</script>
+{% endblock %}

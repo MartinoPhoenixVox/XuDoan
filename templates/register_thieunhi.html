@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% block title %}Đăng Ký Thiếu Nhi{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .register-title {
+        text-align: center;
+        color: #2d3748;
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .date-input {
+        position: relative;
+    }
+
+    .date-input::-webkit-calendar-picker-indicator {
+        background: transparent;
+        bottom: 0;
+        color: transparent;
+        cursor: pointer;
+        height: auto;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: auto;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: #764ba2;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #4a5568;
+    }
+
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .alert-error {
+        background: #fed7d7;
+        color: #c53030;
+        border: 1px solid #feb2b2;
+    }
+
+    @media (max-width: 480px) {
+        .register-card {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="register-card">
+        <h1 class="register-title">Đăng Ký Thiếu Nhi</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-error">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-grid">
+                <div class="form-group">
+                    {{ form.hoTen.label(class="form-label") }}
+                    {{ form.hoTen(class="form-input", placeholder="Nguyễn Văn A") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.ngaySinh.label(class="form-label") }}
+                    {{ form.ngaySinh(class="form-input date-input", placeholder="dd/mm/yyyy") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.giaoXu.label(class="form-label") }}
+                    {{ form.giaoXu(class="form-input", placeholder="Giáo xứ...") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.diaChi.label(class="form-label") }}
+                    {{ form.diaChi(class="form-input", placeholder="Địa chỉ...") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.matKhau.label(class="form-label") }}
+                    {{ form.matKhau(class="form-input", placeholder="Mật khẩu mạnh") }}
+                </div>
+            </div>
+
+            {{ form.submit(class="submit-btn") }}
+        </form>
+
+        <div class="login-link">
+            Đã có tài khoản? <a href="{{ url_for('main.login') }}">Đăng nhập ngay</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Tự động format ngày sinh
+    const dateInput = document.querySelector('.date-input');
+    dateInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 2) value = value.slice(0, 2) + '/' + value.slice(2);
+        if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5, 9);
+        e.target.value = value;
+    });
+
+    // Hiệu ứng loading khi submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = '<div class="spinner"></div> Đang xử lý...';
+        btn.disabled = true;
+    });
+</script>
+{% endblock %}

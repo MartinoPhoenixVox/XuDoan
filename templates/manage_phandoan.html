@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Quản Lý Phân Đoàn{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-2xl font-bold mb-6">Quản Lý Phân Đoàn</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Tạo phân đoàn mới -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">Tạo Phân Đoàn Mới</h2>
+            <form method="POST" action="{{ url_for('main.create_phandoan') }}">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Tên Phân Đoàn</label>
+                    <input type="text" name="tenPhanDoan" placeholder="Ấu Nhi 1" required class="mt-1 p-2 w-full border rounded-md">
+                    <label class="block text-sm font-medium text-gray-700">Năm học</label>
+                    <input type="text" name="namHoc" placeholder="2024-2025" required class="mt-1 p-2 w-full border rounded-md">
+                    <select name="nganh">
+                        <option>Chiên Con</option>
+                        <option>Ấu Nhi</option>
+                        <option>Thiếu Nhi</option>
+                        <option>Nghĩa Sĩ</option>
+                        <option>Hiệp Sĩ</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                    Tạo Phân Đoàn
+                </button>
+            </form>
+        </div>
+
+        <!-- Danh sách phân đoàn -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">Danh Sách Phân Đoàn</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tên</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Năm Học</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for pd in phandoans %}
+                        <tr>
+                            <td class="px-6 py-4">{{ pd.tenPhanDoan }}</td>
+                            <td>{{ pd.namHoc }}</td>
+                            <td>
+                                <a href="/phandoan/{{ pd.idPhanDoan }}" class="text-blue-500 hover:text-blue-700">
+                                    Chi Tiết
+                                </a>
+                            </td>
+                            <td>
+                            <form method="POST" action="{{ url_for('main.delete_phandoan', id=pd.idPhanDoan) }}">
+                                <button type="submit" class="text-red-500 hover:text-red-700">Xóa</button>
+                            </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Nhập Dữ Liệu - XuĐoàn{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .import-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-section {
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .upload-section:hover {
+        border-color: #4f46e5;
+        background-color: #f8fafc;
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-weight: 500;
+    }
+
+    .file-input {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .file-input-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: #4f46e5;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .file-input-label:hover {
+        background: #4338ca;
+    }
+
+    .file-name {
+        margin-left: 1rem;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .or-divider {
+        display: flex;
+        align-items: center;
+        color: #64748b;
+        margin: 1.5rem 0;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .or-divider::before {
+        margin-right: 1rem;
+    }
+
+    .or-divider::after {
+        margin-left: 1rem;
+    }
+
+    .sheet-url-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        transition: border-color 0.3s ease;
+    }
+
+    .sheet-url-input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: #059669;
+    }
+
+    .instructions {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #f1f5f9;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="import-container">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Nhập Dữ Liệu Từ File</h1>
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        {{ form.hidden_tag() }}
+
+        <div class="upload-section">
+            <div class="input-group">
+                <input type="file" name="file" id="file" class="file-input" accept=".xlsx,.xls">
+                <label for="file" class="file-input-label">
+                    <i class="fas fa-file-export mr-2"></i>
+                    Chọn File Excel
+                </label>
+                <span class="file-name" id="file-name">Chưa chọn file</span>
+            </div>
+
+            <div class="or-divider">HOẶC</div>
+
+            <div class="input-group">
+                <label class="input-label">
+                    <i class="fas fa-link mr-2"></i>
+                    Liên kết Google Sheets
+                </label>
+                {{ form.sheet_url(class="sheet-url-input", placeholder="https://docs.google.com/spreadsheets/...") }}
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-upload mr-2"></i>
+            Tải Lên và Xử Lý
+        </button>
+    </form>
+
+    <div class="instructions">
+        <h3 class="font-semibold mb-2 text-gray-700"><i class="fas fa-info-circle mr-2"></i>Hướng Dẫn:</h3>
+        <ul class="list-disc pl-5 text-gray-600">
+            <li>File Excel cần đúng định dạng mẫu</li>
+            <li>Google Sheets cần được chia sẻ quyền xem cho mọi người</li>
+            <li>Dung lượng file tối đa 10MB</li>
+            <li>Hỗ trợ định dạng .xlsx và .xls</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Hiển thị tên file khi chọn
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Chưa chọn file';
+        document.getElementById('file-name').textContent = fileName;
+    });
+
+    // Xác thực form trước khi submit
+    document.querySelector('.upload-form').addEventListener('submit', function(e) {
+        const fileInput = document.getElementById('file');
+        const sheetUrl = document.getElementById('sheet_url').value;
+
+        if (!fileInput.files[0] && !sheetUrl) {
+            e.preventDefault();
+            alert('Vui lòng chọn file hoặc nhập URL Google Sheets!');
+        }
+    });
+</script>
+{% endblock %}

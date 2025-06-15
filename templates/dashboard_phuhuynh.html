@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Phụ Huynh{% endblock %}
+{% block content %}
+<h2>Chào {{ user.hoTen }}</h2>
+{% for tn in user.thieunhis %}
+  <h3>Con: {{ tn.hoTen }}</h3>
+  <p>Địa chỉ: {{ tn.diaChi }}</p>
+  <button onclick="openModal('{{ tn.idThieuNhi }}')" class="bg-blue-500 text-white px-4 py-2 rounded">Yêu Cầu Chỉnh Sửa</button>
+  <!-- Bảng điểm danh -->
+  <table><!-- ... --></table>
+{% endfor %}
+
+<!-- Modal -->
+<div id="editRequestModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50">
+  <div class="relative top-20 mx-auto p-5 border w-96 bg-white rounded-lg">
+    <form method="POST" action="{{ url_for('main.request_edit') }}">
+      <input type="hidden" name="user_type" value="phuhuynh">
+      <input type="hidden" id="thieuNhiId" name="idThieuNhi">
+      <div class="mb-4">
+        <label>Trường cần sửa:</label>
+        <select name="field" class="w-full p-2 border rounded">
+          <option value="diaChi">Địa chỉ</option>
+          <option value="soDienThoai">Số điện thoại</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label>Giá trị mới:</label>
+        <input type="text" name="new_value" class="w-full p-2 border rounded" required>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Gửi</button>
+        <button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openModal(thieuNhiId) {
+  document.getElementById('thieuNhiId').value = thieuNhiId;
+  document.getElementById('editRequestModal').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('editRequestModal').classList.add('hidden');
+}
+</script>
+{% endblock %}

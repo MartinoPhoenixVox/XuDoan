@@ -68,6 +68,10 @@ Dự án **"Xây dựng Hệ thống Quản lý các Hoạt động Đoàn Hội
 
 Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ:
 
+* **Email:** [phuong.vht.0504@gmail.com](mailto:phuong.vht.0504@gmail.com)
+
+Thông tin sinh viên, giảng viên:
+
 **Võ Huỳnh Thanh Phương**
 * **Mã số sinh viên:** 2151013072
 * **Giảng viên hướng dẫn:** TS. LÊ VIẾT TUẤN

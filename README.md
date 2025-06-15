@@ -2,7 +2,7 @@
 
 ## 🚀 Giới thiệu
 
-Dự án **"Xây dựng Hệ thống Quản lý các Hoạt động Đoàn Hội"** là một giải pháp phần mềm được phát triển để hỗ trợ các tổ chức Thiếu Nhi Thánh Thể cấp giáo xứ trong việc quản lý thành viên, lên kế hoạch và tổ chức sự kiện, điểm danh, và theo dõi quá trình hoạt động một cách hiệu quả. Hệ thống được thiết kế với giao diện thân thiện, dễ sử dụng, tích hợp các tính năng quan trọng để đáp ứng nhu cầu quản lý đa dạng.
+Dự án **"Xây dựng Hệ thống Quản lý các Hoạt động Đoàn Hội"** là một giải pháp phần mềm được phát triển để hỗ trợ các tổ chức Thiếu Nhi Thánh Thể cấp giáo xứ trong việc quản lý thành viên, điểm danh, và theo dõi quá trình học tập một cách hiệu quả.
 
 ## ✨ Tính năng nổi bật
 
